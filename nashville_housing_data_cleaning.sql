@@ -3,11 +3,11 @@ DESCRIPCION: Limpieza de Datos de Viviendas con Consultas SQL.
 
 HABILIDADES UTILIZADAS:
 - DQL (Lenguaje de consulta de datos)
-- DDL (Lenguaje de definiciÛn de datos)
-- DML (Lenguaje de manipulaciÛn de datos)
-- ConversiÛn de Tipos de Datos
+- DDL (Lenguaje de definici√≥n de datos)
+- DML (Lenguaje de manipulaci√≥n de datos)
+- Conversi√≥n de Tipos de Datos
 - Funciones de Windows
-- Funciones de AgregaciÛn
+- Funciones de Agregaci√≥n
 - CTE (Expresiones Comunes de Tablas)
 
 INDICACIONES: Para obtener la tabla NashvilleHousing$ con su respectiva informacion 
@@ -15,7 +15,7 @@ primero se debe importar el archivo excel NashvilleHousing.xlsx a la base de dat
 mediante SSMS (SQL Server Management Studio).
 */
 
--- Revision de datos que se estar·n usando
+-- Revision de datos que se estar√°n usando
 select * from daportfoliodb..NashvilleHousing$
 
 -- Comparacion de la columna tipo de dato datetime vs la misma version date.
@@ -23,7 +23,7 @@ select SaleDate as FechaVentaDT, convert(date, SaleDate) as FechaVenta from dapo
 
 -- La columna SaleDate se muestra en un formato de fecha y tiempo.
 -- La parte tiempo no aporta ningun valor (00:00:00.000) por lo que se procede a dejar unicamente la fecha.
--- Para esto se cambiar· el tipo de datos de la columna de datetime a date.
+-- Para esto se cambiar√° el tipo de datos de la columna de datetime a date.
 alter table NashvilleHousing$ alter column SaleDate date
 
 -- Verificando el resultado
@@ -50,11 +50,11 @@ on a.ParcelID = b.ParcelID
 and a.[UniqueID ] <> b.[UniqueID ]
 where a.PropertyAddress is null
 
--- La columna PropertyAddress contiene informaciÛn como direciÛn y ciudad
+-- La columna PropertyAddress contiene informaci√≥n como direci√≥n y ciudad
 -- que deberia estar en diferentes columnas.
 select PropertyAddress from daportfoliodb..NashvilleHousing$
 
--- Extrayedo direcciÛn y ciudad de la columna PropertyAddress
+-- Extrayedo direcci√≥n y ciudad de la columna PropertyAddress
 select substring(PropertyAddress, 1, charindex(',', PropertyAddress) -1) as Direccion
 , substring(PropertyAddress, charindex(',', PropertyAddress) + 1, len(PropertyAddress)) as Ciudad
 from daportfoliodb..NashvilleHousing$
@@ -65,40 +65,40 @@ alter table NashvilleHousing$ add PropertyCity nvarchar(255)
 -- Rellenando la nueva columna ciudad
 update NashvilleHousing$ set PropertyCity = substring(PropertyAddress, charindex(',', PropertyAddress) + 1 , len(PropertyAddress))
 
--- Actualizando la columna direcciÛn
+-- Actualizando la columna direcci√≥n
 update NashvilleHousing$ set PropertyAddress = substring(PropertyAddress, 1, charindex(',', PropertyAddress) -1)
 
--- ComprobaciÛn
+-- Comprobaci√≥n
 select PropertyAddress, PropertyCity from daportfoliodb..NashvilleHousing$
 
 -- Revisando la tabla OwnerAddress.
--- Es necesario extraer direcciÛn, ciudad y estado.
+-- Es necesario extraer direcci√≥n, ciudad y estado.
 select OwnerAddress from daportfoliodb..NashvilleHousing$
 
--- Consulta para extraer DirecciÛn, Ciudad y Estado con substring()
+-- Consulta para extraer Direcci√≥n, Ciudad y Estado con substring()
 select OwnerAddress as DireccionCompleta
 , substring(OwnerAddress, 1, charindex(',', OwnerAddress) - 1) as Direccion
 , substring(OwnerAddress, charindex(',', OwnerAddress) + 2, charindex(',', OwnerAddress, charindex(',', OwnerAddress) + 1) - charindex(',', OwnerAddress) - 2) as Ciudad
 , substring(OwnerAddress, charindex(',', OwnerAddress, charindex(',', OwnerAddress) + 1) + 2, len(OwnerAddress) - charindex(',', OwnerAddress, charindex(',', OwnerAddress) + 1) - 1) as Estado
 from NashvilleHousing$
 
--- Consulta para extraer DirecciÛn, Ciudad y Estado con parsename()
+-- Consulta para extraer Direcci√≥n, Ciudad y Estado con parsename()
 select OwnerAddress as DireccionCompleta
 , parsename(replace(OwnerAddress, ',', '.') , 3) as Direccion
 , parsename(replace(OwnerAddress, ',', '.') , 2) as Ciudad
 , parsename(replace(OwnerAddress, ',', '.') , 1) as Estado
 from daportfoliodb..NashvilleHousing$
 
--- Creando una nueva tabla para guardar las ciudades extraÌdas
+-- Creando una nueva tabla para guardar las ciudades extra√≠das
 alter table NashvilleHousing$ add OwnerCity nvarchar(255);
 
--- Rellenando la nueva tabla con las ciudades extraÌdas
+-- Rellenando la nueva tabla con las ciudades extra√≠das
 update NashvilleHousing$ set OwnerCity = parsename(replace(OwnerAddress, ',', '.') , 2)
 
--- Creando una nueva tabla para guardar los estados extraÌdos
+-- Creando una nueva tabla para guardar los estados extra√≠dos
 alter table NashvilleHousing$ add OwnerState nvarchar(255)
 
--- Rellenando la nueva tabla con los estados extraÌdos
+-- Rellenando la nueva tabla con los estados extra√≠dos
 update NashvilleHousing$ set OwnerState = parsename(replace(OwnerAddress, ',', '.') , 1)
 
 -- Actualizando la columna OwnerAddress
