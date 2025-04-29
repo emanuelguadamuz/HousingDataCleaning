@@ -1,6 +1,6 @@
 # nashville-housing-data-cleaning
 
-Limpieza de Datos de Viviendas en Nashville.
+Limpieza de Datos de Viviendas Nashville.
 En este proyecto se toman datos almacenados sin procesar para identificar y corregir inconsistencias en los conjuntos de datos 
 de viviendas mediante consultas en SQL Server para que sean más utilizables para el análisis.
 
